@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real Ranking Challenge</title>
+  <style>
+    :root{
+      --bg:#0f172a;--panel:#111827;--card:#ffffff;--muted:#94a3b8;--text:#f8fafc;--accent:#38bdf8;--good:#22c55e;--bad:#ef4444;--warn:#f59e0b;--purple:#a78bfa;
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,'Noto Sans KR',sans-serif;background:linear-gradient(135deg,#0f172a,#172554 55%,#312e81);color:var(--text);min-height:100vh}
+    header{padding:22px 28px;border-bottom:1px solid rgba(255,255,255,.12);background:rgba(15,23,42,.75);backdrop-filter:blur(10px);position:sticky;top:0;z-index:10}
+    h1{margin:0;font-size:30px;letter-spacing:-.5px}.sub{margin-top:6px;color:#cbd5e1;font-size:14px}.wrap{max-width:1280px;margin:0 auto;padding:22px}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+    .panel{background:rgba(15,23,42,.82);border:1px solid rgba(255,255,255,.13);border-radius:22px;padding:18px;box-shadow:0 14px 40px rgba(0,0,0,.25)}
+    .topline{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.badge{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:8px 12px;background:rgba(56,189,248,.14);color:#bae6fd;font-weight:700;font-size:13px}.final{background:rgba(245,158,11,.18);color:#fde68a}.practice{background:rgba(148,163,184,.18);color:#e2e8f0}
+    .question{font-size:28px;line-height:1.28;font-weight:800;margin:18px 0 8px}.kor{font-size:17px;color:#cbd5e1;margin-bottom:14px}.source{font-size:12px;color:#94a3b8;margin-top:14px;line-height:1.45}.source a{color:#bae6fd}
+    .cards{display:grid;gap:10px;margin:16px 0}.card{background:var(--card);color:#111827;border-radius:16px;padding:14px 16px;font-weight:800;cursor:grab;display:flex;align-items:center;gap:12px;box-shadow:0 8px 18px rgba(0,0,0,.18);user-select:none}.card:active{cursor:grabbing}.rankno{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#e0f2fe;color:#0369a1;font-weight:900;flex:0 0 34px}.dragging{opacity:.5;transform:scale(.98)}
+    .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}button,select,input{border:0;border-radius:14px;padding:12px 15px;font-weight:800;font-size:14px}button{background:#e0f2fe;color:#075985;cursor:pointer}button:hover{filter:brightness(.95)}button.primary{background:var(--accent);color:#082f49}button.good{background:#bbf7d0;color:#166534}button.warn{background:#fde68a;color:#92400e}button.bad{background:#fecaca;color:#991b1b}button.dark{background:#334155;color:#f8fafc}button:disabled{opacity:.45;cursor:not-allowed}.teamSelect{background:#1e293b;color:white;border:1px solid rgba(255,255,255,.2)}
+    .teams{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.team{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:14px}.team h3{margin:0 0 8px;font-size:18px}.score{font-size:34px;font-weight:900}.submitted{font-size:12px;color:#86efac;font-weight:800}.notyet{font-size:12px;color:#fca5a5;font-weight:800}.betrow{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.bet{padding:8px 10px;font-size:12px;background:#475569;color:white}.bet.active{background:#facc15;color:#713f12}
+    .answer{display:none;margin-top:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px}.answer.show{display:block}.answer h3{margin:0 0 10px}.answer ol{margin:0;padding-left:24px}.answer li{padding:5px 0;font-weight:800}.resultTable{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}.resultTable th,.resultTable td{border-bottom:1px solid rgba(255,255,255,.12);padding:8px;text-align:left}.small{font-size:12px;color:#cbd5e1;line-height:1.5}.progress{height:10px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin-top:12px}.bar{height:100%;background:linear-gradient(90deg,#38bdf8,#a78bfa);width:0%}.modal{position:fixed;inset:0;background:rgba(2,6,23,.8);display:none;align-items:center;justify-content:center;z-index:99;padding:20px}.modal.show{display:flex}.modalbox{max-width:820px;width:100%;background:#0f172a;border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:22px;box-shadow:0 18px 60px rgba(0,0,0,.45)}.modalbox h2{margin-top:0}.rules{line-height:1.7;color:#e2e8f0}.pill{display:inline-block;background:rgba(255,255,255,.1);padding:3px 8px;border-radius:99px;margin:2px;color:#e2e8f0;font-size:12px}
+    .winner{font-size:26px;font-weight:900;color:#fde68a}.hidden{display:none!important}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🏆 Real Ranking Challenge</h1>
+    <div class="sub">실제 통계·설문 순위를 맞히는 4팀 퀴즈쇼형 영어 웹앱</div>
+  </header>
+  <div class="wrap">
+    <div class="grid">
+      <main class="panel">
+        <div class="topline">
+          <div>
+            <span id="roundBadge" class="badge">Round</span>
+            <span id="doubleBadge" class="badge final hidden">Final x2</span>
+          </div>
+          <div class="small"><span id="roundNow"></span> / <span id="roundTotal"></span></div>
+        </div>
+        <div class="progress"><div id="progressBar" class="bar"></div></div>
+        <div id="question" class="question"></div>
+        <div id="kor" class="kor"></div>
+        <div class="topline">
+          <select id="activeTeam" class="teamSelect">
+            <option value="0">Team A 제출</option><option value="1">Team B 제출</option><option value="2">Team C 제출</option><option value="3">Team D 제출</option>
+          </select>
+          <div class="small">카드를 위아래로 드래그해서 1위 → 5위 순서로 배열</div>
+        </div>
+        <div id="cards" class="cards"></div>
+        <div class="controls">
+          <button class="primary" onclick="submitTeam()">현재 팀 답 제출</button>
+          <button class="warn" onclick="revealAnswer()">정답 공개 & 채점</button>
+          <button class="dark" onclick="nextRound()">다음 문제</button>
+          <button onclick="shuffleCards()">카드 섞기</button>
+          <button onclick="openRules()">규칙 보기</button>
+        </div>
+        <div id="answer" class="answer">
+          <h3>정답</h3>
+          <ol id="answerList"></ol>
+          <table class="resultTable" id="resultTable"></table>
+        </div>
+        <div id="source" class="source"></div>
+      </main>
+      <aside class="panel">
+        <div class="topline"><h2 style="margin:0">점수판</h2><button class="bad" onclick="resetGame()">전체 초기화</button></div>
+        <div class="small" style="margin:8px 0 14px">베팅은 팀별로 선택. 일반 문제는 ±베팅점, 파이널은 점수 2배.</div>
+        <div id="teams" class="teams"></div>
+        <div id="winnerBox" class="answer"></div>
+      </aside>
+    </div>
+  </div>
+  <div id="modal" class="modal" onclick="closeRules(event)">
+    <div class="modalbox">
+      <h2>수업 운영 규칙</h2>
+      <div class="rules">
+        <p><b>목표:</b> 영어 질문을 읽고 실제 통계 순위를 추론해 1위부터 5위까지 배열합니다.</p>
+        <p><b>기본 점수:</b> 정확한 위치 +20점, 한 칸 차이 +10점, 두 칸 차이 +5점. 총점이 베팅 성공 기준 점수입니다.</p>
+        <p><b>베팅:</b> 팀별 50 / 100 / 200점 선택. 기본 점수가 60점 이상이면 베팅 성공으로 추가점, 60점 미만이면 감점. 파이널 라운드는 모든 점수가 2배입니다.</p>
+        <p><b>추천 진행:</b> 연습 1문제 → 본게임 6문제 → 파이널 2문제. 팀마다 한 명씩 Reader, Clue Finder, Rank Manager, Speaker 역할을 맡기면 좋습니다.</p>
+        <button onclick="document.getElementById('modal').classList.remove('show')">닫기</button>
+      </div>
+    </div>
+  </div>
+<script>
+const questions = [
+ {type:'practice', title:'Practice: Most Commonly Lost Items', kor:'사람들이 가장 자주 잃어버리는 물건을 많이 잃어버리는 순서대로 배열하세요.', order:['Phone','Keys','Wallet','Glasses','Remote Control'], source:'Practice data based on commonly reported lost-item survey patterns. 수업 연습용입니다.'},
+ {type:'normal', title:'Most Forgotten Travel Items', kor:'여행 짐을 쌀 때 사람들이 가장 자주 깜빡하는 물건 순위를 맞히세요.', order:['Phone charger','Toiletries','Sunscreen','Medication','Socks'], source:'Source note: Use or replace with your preferred travel survey source. New York Post/SWNS style survey topics commonly report charger as a top forgotten item.'},
+ {type:'normal', title:'Most Used Emojis', kor:'세계적으로 자주 사용되는 이모지 순위를 맞히세요.', order:['😂 Face with Tears of Joy','❤️ Red Heart','🤣 Rolling on the Floor Laughing','👍 Thumbs Up','😭 Loudly Crying Face'], source:'Source note: Based on Unicode Consortium emoji frequency rankings. 최신 순위로 바꾸고 싶으면 questions 배열만 수정하세요.'},
+ {type:'normal', title:'Most Popular Pizza Toppings', kor:'미국 설문에서 인기 있는 피자 토핑 순위를 맞히세요.', order:['Pepperoni','Sausage','Mushrooms','Extra cheese','Onions'], source:'Source note: Based on commonly cited U.S. pizza topping surveys. 지역/연도에 따라 순위가 달라질 수 있습니다.'},
+ {type:'normal', title:'Most Common New Year’s Resolutions', kor:'사람들이 가장 많이 세우는 새해 목표 순위를 맞히세요.', order:['Exercise more','Eat healthier','Lose weight','Save more money','Spend more time with family/friends'], source:'Source note: Based on YouGov/Statista-style New Year resolution survey categories.'},
+ {type:'normal', title:'Most Used Social Media Platforms', kor:'전 세계에서 많이 사용하는 소셜미디어 플랫폼 순위를 맞히세요.', order:['Facebook','YouTube','WhatsApp','Instagram','TikTok'], source:'Source note: Based on DataReportal-style global social media usage rankings. 연도별 업데이트 권장.'},
+ {type:'normal', title:'Most Popular Ice Cream Flavors', kor:'인기 아이스크림 맛 순위를 맞히세요.', order:['Vanilla','Chocolate','Strawberry','Cookies and cream','Mint chocolate chip'], source:'Source note: Based on common U.S. ice cream preference surveys. 학생 반응용 가벼운 라운드입니다.'},
+ {type:'final', title:'🛒 Final 1: Most Common Impulse Buys', kor:'사람들이 충동구매를 가장 많이 하는 물건 순위를 맞히세요.', order:['Snacks','Clothes','Beauty products','Shoes','Electronics'], source:'Based on consumer survey-style impulse buying categories. 수업용으로 학생들이 토론하기 좋은 보기로 구성했습니다.'},
+ {type:'final', title:'🍕 Final 2: Which Day Do People Order Pizza Most?', kor:'사람들이 피자를 가장 많이 주문하는 요일 순위를 맞히세요.', order:['Friday','Saturday','Sunday','Thursday','Wednesday'], source:'Based on U.S. pizza ordering surveys. Pizza delivery/order patterns often show Friday and Saturday as the strongest days.'}
+];
+let state={round:0, scores:[0,0,0,0], bets:[50,50,50,50], submitted:[null,null,null,null], revealed:false};
+const teamNames=['Team A','Team B','Team C','Team D'];
+function init(){renderRound();renderTeams();}
+function current(){return questions[state.round];}
+function renderRound(){const q=current();document.getElementById('roundNow').textContent=state.round+1;document.getElementById('roundTotal').textContent=questions.length;document.getElementById('progressBar').style.width=((state.round+1)/questions.length*100)+'%';let badge=document.getElementById('roundBadge');badge.className='badge '+(q.type==='practice'?'practice':'');badge.textContent=q.type==='practice'?'Practice':q.type==='final'?'Final Round':'Main Round';document.getElementById('doubleBadge').classList.toggle('hidden',q.type!=='final');document.getElementById('question').textContent=q.title;document.getElementById('kor').textContent=q.kor;document.getElementById('source').textContent=q.source;document.getElementById('answer').classList.remove('show');state.submitted=[null,null,null,null];state.revealed=false;makeCards(shuffled(q.order));renderTeams();}
+function makeCards(items){const box=document.getElementById('cards');box.innerHTML='';items.forEach((txt,i)=>{const d=document.createElement('div');d.className='card';d.draggable=true;d.dataset.value=txt;d.innerHTML=`<span class="rankno">${i+1}</span><span>${txt}</span>`;d.addEventListener('dragstart',()=>d.classList.add('dragging'));d.addEventListener('dragend',()=>{d.classList.remove('dragging');renumber();});box.appendChild(d);});box.addEventListener('dragover',e=>{e.preventDefault();const after=getDragAfterElement(box,e.clientY);const dragging=document.querySelector('.dragging');if(!dragging)return;if(after==null)box.appendChild(dragging);else box.insertBefore(dragging,after);renumber();});renumber();}
+function getDragAfterElement(container,y){const els=[...container.querySelectorAll('.card:not(.dragging)')];return els.reduce((closest,child)=>{const box=child.getBoundingClientRect();const offset=y-box.top-box.height/2;if(offset<0&&offset>closest.offset)return{offset,element:child};else return closest;},{offset:Number.NEGATIVE_INFINITY}).element;}
+function renumber(){[...document.querySelectorAll('.card')].forEach((c,i)=>c.querySelector('.rankno').textContent=i+1);}
+function getArrangement(){return [...document.querySelectorAll('.card')].map(c=>c.dataset.value);}
+function submitTeam(){if(state.revealed)return alert('이미 정답이 공개되었습니다. 다음 문제로 넘어가세요.');const t=+document.getElementById('activeTeam').value;state.submitted[t]=getArrangement();renderTeams();}
+function setBet(t,b){state.bets[t]=b;renderTeams();}
+function renderTeams(){const box=document.getElementById('teams');box.innerHTML='';teamNames.forEach((name,i)=>{const div=document.createElement('div');div.className='team';div.innerHTML=`<h3>${name}</h3><div class="score">${state.scores[i]}</div><div class="${state.submitted[i]?'submitted':'notyet'}">${state.submitted[i]?'제출 완료':'미제출'}</div><div class="betrow">${[50,100,200].map(b=>`<button class="bet ${state.bets[i]===b?'active':''}" onclick="setBet(${i},${b})">Bet ${b}</button>`).join('')}</div>`;box.appendChild(div);});}
+function scoreOne(ans, correct){let base=0;ans.forEach((item,idx)=>{const ci=correct.indexOf(item);const diff=Math.abs(idx-ci);if(diff===0)base+=20;else if(diff===1)base+=10;else if(diff===2)base+=5;});return base;}
+function revealAnswer(){if(state.revealed)return;const q=current();const correct=q.order;let html='';correct.forEach(x=>html+=`<li>${x}</li>`);document.getElementById('answerList').innerHTML=html;let rows='<tr><th>Team</th><th>Base</th><th>Bet</th><th>Change</th><th>Submitted Ranking</th></tr>';teamNames.forEach((name,i)=>{const ans=state.submitted[i]||[];let base=ans.length?scoreOne(ans,correct):0;let multiplier=q.type==='final'?2:1;let bet=state.bets[i];let change=(base>=60?base+bet:base-bet)*multiplier;if(q.type==='practice') change=0;state.scores[i]+=change;rows+=`<tr><td>${name}</td><td>${base}</td><td>${bet}</td><td>${change>0?'+':''}${change}</td><td>${ans.length?ans.join(' → '):'No answer'}</td></tr>`;});document.getElementById('resultTable').innerHTML=rows;document.getElementById('answer').classList.add('show');state.revealed=true;renderTeams();showWinnerIfEnd();}
+function nextRound(){if(state.round<questions.length-1){state.round++;renderRound();}else{showFinalWinner();}}
+function showWinnerIfEnd(){if(state.round===questions.length-1)showFinalWinner();}
+function showFinalWinner(){let max=Math.max(...state.scores);let winners=teamNames.filter((_,i)=>state.scores[i]===max).join(', ');const box=document.getElementById('winnerBox');box.classList.add('show');box.innerHTML=`<div class="winner">🏆 Winner: ${winners}</div><div class="small">최종 점수 ${max}점</div>`;}
+function resetGame(){if(!confirm('점수와 진행 상황을 모두 초기화할까요?'))return;state={round:0,scores:[0,0,0,0],bets:[50,50,50,50],submitted:[null,null,null,null],revealed:false};document.getElementById('winnerBox').classList.remove('show');renderRound();renderTeams();}
+function shuffleCards(){makeCards(shuffled(getArrangement()));}
+function shuffled(arr){return [...arr].sort(()=>Math.random()-.5);}
+function openRules(){document.getElementById('modal').classList.add('show');}
+function closeRules(e){if(e.target.id==='modal')document.getElementById('modal').classList.remove('show');}
+init();
+</script>
+</body>
+</html>
